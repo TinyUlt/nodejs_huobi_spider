@@ -57,7 +57,7 @@ function get_depth() {
         let url = `${BASE_URL}/market/detail/merged?symbol=${coin}${currency}`;
         console.log(url);
         http.get(url, {
-            timeout: 1000,
+            timeout: 10000,
             gzip: true
         }).then(data => {
             // console.log(data);
@@ -80,7 +80,7 @@ function get_usdt(){
         let url = "https://api-otc.huobi.pro/v1/otc/base/market/price";
         console.log(url);
         http.get(url, {
-            timeout: 5000,
+            timeout: 10000,
             gzip: true
         }).then(data => {
             console.log(1);
@@ -143,7 +143,7 @@ function run() {
         return item();
     }).then(() => {
 
-         setTimeout(run, 1000 * 5);
+         setTimeout(run, 1000 * 60);
     });
 }
 
