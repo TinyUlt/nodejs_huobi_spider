@@ -1,0 +1,14 @@
+##User
+Library/
+Temp/
+pkg/
+obj/
+node_modules/
+.idea/
+*.CSharp
+*.Editor
+*.Plugins
+*.sln
+*.csproj
+*.exe
+.DS_Store
