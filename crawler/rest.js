@@ -34,9 +34,9 @@ function insertOne(coin, price){
     console.log(where);
 
     var updateStr = {$set: { [coin]:price  }};
-    dbase.collection("s_"+getDateString()).update(where,updateStr,{upsert:true}, function(err, res) {
+    dbase.collection("t_"+getDateString()).update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
-        console.log("文档插入成功");
+        console.log(coin+"文档插入成功");
     });
 }
 
@@ -75,7 +75,7 @@ function get_depth() {
         resolve(null);
     });
 }
-function get_usdt(){
+function get_usd(){
     return new Promise(resolve => {
         let url = "https://api-otc.huobi.pro/v1/otc/base/market/price";
         console.log(url);
@@ -93,6 +93,34 @@ function get_usdt(){
                     price =json[i].price
                 }
             }
+            handle("usd" , parseFloat(price));
+            resolve(null);
+        }).catch(ex => {
+            console.log("catch");
+            resolve(null);
+        });
+    }, reject => {
+        console.log("reject");
+        resolve(null);
+    });
+}
+function get_usdt(){
+    return new Promise(resolve => {
+        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=1&currPage=1&online=1&range=0&currentPage=1&merchant=0";
+        console.log(url);
+        http.get(url, {
+            timeout: 10000,
+            gzip: true
+        }).then(data => {
+            console.log(1);
+            console.log(data);
+            console.log(2);
+            let json = JSON.parse(data).data;
+            let price = 0.0;
+            for(let i = 0; i < json.length; i++){
+                price += json[i].price
+            }
+            price = price / json.length;
             handle("usdt" , parseFloat(price));
             resolve(null);
         }).catch(ex => {
@@ -104,30 +132,6 @@ function get_usdt(){
         resolve(null);
     });
 }
-function get_marketUsdtPrice() {
-    return new Promise(resolve => {
-        let url = `https://api-otc.huobi.pro/v1/otc/base/market/price`;
-        http.get(url, {
-            timeout: 2000,
-            gzip: true
-        }).then(data => {
-            // console.log(data);
-            let json = JSON.parse(data);
-           // let t = json.ts;
-           // let asks = json.tick.asks;
-            //let bids = json.tick.bids;
-            console.log(json);
-            //handle(coin, asks, bids, currency);
-            resolve(null);
-        }).catch(ex => {
-            //console.log(coin, currency, ex);
-            resolve(null);
-        });
-    }, reject => {
-        console.log("bad");
-    });
-}
-
 function run() {
     // var today = getDateString();
    // get_marketUsdtPrice();
@@ -137,13 +141,13 @@ function run() {
     // let list_usdt = ['btc-usdt', 'ltc-usdt', 'eth-usdt', 'etc-usdt', 'bcc-usdt', 'dash-usdt', 'xrp-usdt', 'eos-usdt', 'omg-usdt', 'zec-usdt', 'qtum-usdt'];
     // let list_eth = ['omg-eth', 'eos-eth', 'qtum-eth'];
     // let list = list_btc.concat(list_usdt).concat(list_eth);
-    let list = [get_depth,get_usdt];
+    let list = [get_depth,get_usd,get_usdt];
     Promise.map(list, item => {
 
         return item();
     }).then(() => {
 
-         setTimeout(run, 1000 * 60);
+         setTimeout(run, 1000 * 10);
     });
 }
 
