@@ -34,7 +34,7 @@ function insertOne(coin, price){
     console.log(where);
 
     var updateStr = {$set: { [coin]:price  }};
-    dbase.collection("t_"+getDateString()).update(where,updateStr,{upsert:true}, function(err, res) {
+    dbase.collection("a_"+getDateString()).update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
         console.log(coin+"文档插入成功");
     });
