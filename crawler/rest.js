@@ -28,16 +28,84 @@ function getDataValue(){
     var today=new Date();
     return today.valueOf();
 }
+let timeRecord={};
+// timeRecord["btc"] = {
+//     halfMinute:0,
+//     minute:0,
+//     fiveMinute:0,
+//     tenMinute:0,
+//     halfHour:0,
+//     hour:0
+// };
+// timeRecord["usd"] = {
+//     halfMinute:0,
+//     minute:0,
+//     fiveMinute:0,
+//     tenMinute:0,
+//     halfHour:0,
+//     hour:0
+// };
+// timeRecord["usdt"] = {
+//     halfMinute:0,
+//     minute:0,
+//     fiveMinute:0,
+//     tenMinute:0,
+//     halfHour:0,
+//     hour:0
+// };
+
 function insertOne(coin, price){
 
-    var where = {_id: getDataValue()};
+    if(timeRecord[coin] == null){
+        console.log("aaaaaaaa");
+        timeRecord[coin] = {
+            halfMinute:0,
+            minute:0,
+            fiveMinute:0,
+            tenMinute:0,
+            halfHour:0,
+            hour:0
+        };
+    }
+    let nowTime =  getDataValue()
+    var where = {_id:nowTime};
     console.log(where);
 
-    var updateStr = {$set: { [coin]:price  }};
-    dbase.collection("a_"+getDateString()).update(where,updateStr,{upsert:true}, function(err, res) {
+    let setData = {[coin]:price};
+
+    if(nowTime - timeRecord[coin].halfMinute > 1000*30 ){
+        timeRecord[coin].halfMinute = nowTime;
+        setData.halfMinute = 1;
+    }
+    if(nowTime - timeRecord[coin].minute > 1000*60 ){
+        timeRecord[coin].minute = nowTime;
+        setData.minute = 1;
+    }
+    if(nowTime - timeRecord[coin].fiveMinute > 1000*60*5 ){
+        timeRecord[coin].fiveMinute = nowTime;
+        setData.fiveMinute = 1;
+    }
+    if(nowTime - timeRecord[coin].tenMinute > 1000*60*10 ){
+        timeRecord[coin].tenMinute = nowTime;
+        setData.tenMinute = 1;
+    }
+    if(nowTime - timeRecord[coin].halfHour > 1000*60*30 ){
+        timeRecord[coin].halfHour = nowTime;
+        setData.halfHour = 1;
+    }
+    if(nowTime - timeRecord[coin].hour > 1000*60*60 ){
+        timeRecord[coin].hour = nowTime;
+        setData.hour = 1;
+    }
+
+
+    var updateStr = {$set: setData};
+    dbase.collection("e").update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
         console.log(coin+"文档插入成功");
     });
+
+
 }
 
 function handle(coin, price) {
@@ -141,6 +209,10 @@ function run() {
     // let list_usdt = ['btc-usdt', 'ltc-usdt', 'eth-usdt', 'etc-usdt', 'bcc-usdt', 'dash-usdt', 'xrp-usdt', 'eos-usdt', 'omg-usdt', 'zec-usdt', 'qtum-usdt'];
     // let list_eth = ['omg-eth', 'eos-eth', 'qtum-eth'];
     // let list = list_btc.concat(list_usdt).concat(list_eth);
+
+
+
+
     let list = [get_depth,get_usd,get_usdt];
     Promise.map(list, item => {
 
