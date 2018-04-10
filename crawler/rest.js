@@ -59,6 +59,7 @@ function insertOne(coin, price){
     if(timeRecord[coin] == null){
         console.log("aaaaaaaa");
         timeRecord[coin] = {
+            second:0,
             halfMinute:0,
             minute:0,
             fiveMinute:0,
@@ -72,35 +73,38 @@ function insertOne(coin, price){
     console.log(where);
 
     let setData = {[coin]:price};
-
-    if(nowTime - timeRecord[coin].halfMinute > 1000*30 ){
+    if(nowTime - timeRecord[coin].second >= 1000 ){
+        timeRecord[coin].second = nowTime;
+        setData.second = 1;
+    }
+    if(nowTime - timeRecord[coin].halfMinute >= 1000*30 ){
         timeRecord[coin].halfMinute = nowTime;
         setData.halfMinute = 1;
     }
-    if(nowTime - timeRecord[coin].minute > 1000*60 ){
+    if(nowTime - timeRecord[coin].minute >= 1000*60 ){
         timeRecord[coin].minute = nowTime;
         setData.minute = 1;
     }
-    if(nowTime - timeRecord[coin].fiveMinute > 1000*60*5 ){
+    if(nowTime - timeRecord[coin].fiveMinute >= 1000*60*5 ){
         timeRecord[coin].fiveMinute = nowTime;
         setData.fiveMinute = 1;
     }
-    if(nowTime - timeRecord[coin].tenMinute > 1000*60*10 ){
+    if(nowTime - timeRecord[coin].tenMinute >= 1000*60*10 ){
         timeRecord[coin].tenMinute = nowTime;
         setData.tenMinute = 1;
     }
-    if(nowTime - timeRecord[coin].halfHour > 1000*60*30 ){
+    if(nowTime - timeRecord[coin].halfHour >= 1000*60*30 ){
         timeRecord[coin].halfHour = nowTime;
         setData.halfHour = 1;
     }
-    if(nowTime - timeRecord[coin].hour > 1000*60*60 ){
+    if(nowTime - timeRecord[coin].hour >= 1000*60*60 ){
         timeRecord[coin].hour = nowTime;
         setData.hour = 1;
     }
 
 
     var updateStr = {$set: setData};
-    dbase.collection("e").update(where,updateStr,{upsert:true}, function(err, res) {
+    dbase.collection("f").update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
         console.log(coin+"文档插入成功");
     });
@@ -219,7 +223,7 @@ function run() {
         return item();
     }).then(() => {
 
-         setTimeout(run, 1000 * 10);
+         setTimeout(run, 1000 * 5);
     });
 }
 
