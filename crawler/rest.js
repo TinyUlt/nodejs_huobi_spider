@@ -72,7 +72,8 @@ function insertOne(coin, price){
     var where = {_id:nowTime};
     console.log(where);
 
-    let setData = {[coin]:price};
+    let setData = {};
+
     if(nowTime - timeRecord[coin].second >= 1000 ){
         timeRecord[coin].second = nowTime;
         setData.second = 1;
@@ -102,7 +103,7 @@ function insertOne(coin, price){
         setData.hour = 1;
     }
 
-
+    setData[coin] = price;
     var updateStr = {$set: setData};
     dbase.collection("f").update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
