@@ -105,7 +105,7 @@ function insertOne(coin, price){
 
     setData[coin] = price;
     var updateStr = {$set: setData};
-    dbase.collection("f").update(where,updateStr,{upsert:true}, function(err, res) {
+    dbase.collection("g").update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
         console.log(coin+"文档插入成功");
     });
