@@ -190,7 +190,7 @@ function get_usd(){
         resolve(null);
     });
 }
-function get_usdt(){
+function get_usdtsell(){
     return new Promise(resolve => {
         let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=1&currPage=1&online=1&range=0&currentPage=1&merchant=0";
         console.log(url);
@@ -216,6 +216,32 @@ function get_usdt(){
         resolve(null);
     });
 }
+function get_usdtbuy(){
+    return new Promise(resolve => {
+        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=0&currPage=1&online=1&range=0&currentPage=1&merchant=0";
+        console.log(url);
+        http.get(url, {
+            timeout: 10000,
+            gzip: true
+        }).then(data => {
+
+            let json = JSON.parse(data).data;
+            let price = 0.0;
+            for(let i = 0; i < json.length; i++){
+                price += json[i].price
+            }
+            price = price / json.length;
+            handle("usdtbuy" , parseFloat(price));
+            resolve(null);
+        }).catch(ex => {
+            console.log("catch");
+            resolve(null);
+        });
+    }, reject => {
+        console.log("reject");
+        resolve(null);
+    });
+}
 function run() {
     // var today = getDateString();
    // get_marketUsdtPrice();
@@ -230,7 +256,7 @@ function run() {
 
 
     // let list = [get_usd];
-    let list = [get_depth,get_usd,get_usdt];
+    let list = [get_depth,get_usd,get_usdtsell, get_usdtbuy];
     Promise.map(list, item => {
 
         return item();
