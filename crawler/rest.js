@@ -169,7 +169,7 @@ function get_usd(){
             // }
             let list = data.split(",");
             console.log(list[1]);
-            handle("usd" , list[1]);
+            handle("usd" , parseFloat(list[1]));
             resolve(null);
         }).catch(ex => {
             console.log("catch");
