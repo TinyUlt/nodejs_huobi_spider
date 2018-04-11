@@ -57,7 +57,7 @@ let timeRecord={};
 function insertOne(coin, price){
 
     if(timeRecord[coin] == null){
-        console.log("aaaaaaaa");
+
         timeRecord[coin] = {
             second:0,
             halfMinute:0,
@@ -138,6 +138,7 @@ function get_depth() {
             let price = json.tick.close;
 
             handle(coin, price);
+            handle("btcamount", json.tick.amount);
             resolve(null);
         }).catch(ex => {
             console.log(coin, currency, ex);
@@ -156,9 +157,7 @@ function get_usd(){
             timeout: 10000,
             gzip: true
         }).then(data => {
-            console.log(1);
-             console.log(data);
-            console.log(2);
+
             let json = JSON.parse(data).data;
             let price = null;
             for(let i = 0; i < json.length; i++){
@@ -185,9 +184,7 @@ function get_usdt(){
             timeout: 10000,
             gzip: true
         }).then(data => {
-            console.log(1);
-            console.log(data);
-            console.log(2);
+           
             let json = JSON.parse(data).data;
             let price = 0.0;
             for(let i = 0; i < json.length; i++){
