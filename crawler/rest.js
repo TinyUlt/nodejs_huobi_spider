@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 
-var url = 'mongodb://47.52.225.13:27017';
+var url = 'mongodb://root:TinyUlt920805@47.52.225.13:27017/huobi?authSource=admin';
 var dbase;
 MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
