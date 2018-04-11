@@ -29,6 +29,7 @@ function getDataValue(){
     return today.valueOf();
 }
 let timeRecord={};
+let preValue={};
 // timeRecord["btc"] = {
 //     halfMinute:0,
 //     minute:0,
@@ -67,10 +68,19 @@ function insertOne(coin, price){
             halfHour:0,
             hour:0
         };
+
     }
-    let nowTime =  getDataValue()
+    if(preValue[coin] == null){
+        preValue[coin] = 0;
+    }
+    //过滤重复的数据
+    if(preValue[coin] == price){
+        console.log(coin + " 数据相同， 跳过")
+        return;
+    }
+    preValue[coin] = price;
+    let nowTime =  getDataValue();
     var where = {_id:nowTime};
-    console.log(where);
 
     let setData = {};
 
