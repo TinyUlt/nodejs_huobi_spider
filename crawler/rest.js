@@ -151,21 +151,25 @@ function get_depth() {
 }
 function get_usd(){
     return new Promise(resolve => {
-        let url = "https://api-otc.huobi.pro/v1/otc/base/market/price";
+        // let url = "https://api-otc.huobi.pro/v1/otc/base/market/price";
+        let url = "http://hq.sinajs.cn/rn=list=fx_susdcny";
         console.log(url);
         http.get(url, {
             timeout: 10000,
             gzip: true
         }).then(data => {
 
-            let json = JSON.parse(data).data;
-            let price = null;
-            for(let i = 0; i < json.length; i++){
-                if(json[i].coinId == 2){
-                    price =json[i].price
-                }
-            }
-            handle("usd" , parseFloat(price));
+
+            // let json = JSON.parse(data);
+            // let price = null;
+            // for(let i = 0; i < json.length; i++){
+            //     if(json[i].coinId == 2){
+            //         price =json[i].price
+            //     }
+            // }
+            let list = data.split(",");
+            console.log(list[1]);
+            handle("usd" , list[1]);
             resolve(null);
         }).catch(ex => {
             console.log("catch");
@@ -184,7 +188,7 @@ function get_usdt(){
             timeout: 10000,
             gzip: true
         }).then(data => {
-           
+
             let json = JSON.parse(data).data;
             let price = 0.0;
             for(let i = 0; i < json.length; i++){
@@ -215,6 +219,7 @@ function run() {
 
 
 
+    // let list = [get_usd];
     let list = [get_depth,get_usd,get_usdt];
     Promise.map(list, item => {
 
