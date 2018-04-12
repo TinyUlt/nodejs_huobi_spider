@@ -191,9 +191,9 @@ function get_usd(){
     });
 }
 let usdtsell2sum=0;
-let usdtsell3sum=0;
+
 let usdtbuy2sum=0;
-let usdtbuy3sum=0;
+
 function get_usdtsell(){
     return new Promise(resolve => {
         let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=1&currPage=1&online=1&range=0&currentPage=1&merchant=0";
@@ -209,8 +209,8 @@ function get_usdtsell(){
                 price += json[i].price
             }
             price = price / json.length;
-            if(usdtsell2sum!=0&&usdtsell3sum!=0){
-                price = (price + usdtsell2sum + usdtsell3sum)/3.0;
+            if(usdtsell2sum!=0){
+                price = (price + usdtsell2sum )/2.0;
             }
 
             handle("usdt" , parseFloat(price));
@@ -249,33 +249,7 @@ function get_usdtsell2(){
         resolve(null);
     });
 }
-function get_usdtsell3(){
-    return new Promise(resolve => {
-        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=1&currPage=3&online=1&range=0&currentPage=1&merchant=0";
-        console.log(url);
-        http.get(url, {
-            timeout: 10000,
-            gzip: true
-        }).then(data => {
 
-            let json = JSON.parse(data).data;
-            let price = 0.0;
-            for(let i = 0; i < json.length; i++){
-                price += json[i].price
-            }
-
-            usdtsell3sum = price / json.length;
-
-            resolve(null);
-        }).catch(ex => {
-            console.log("catch");
-            resolve(null);
-        });
-    }, reject => {
-        console.log("reject");
-        resolve(null);
-    });
-}
 function get_usdtbuy(){
     return new Promise(resolve => {
         let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=0&currPage=1&online=1&range=0&currentPage=1&merchant=0";
@@ -291,8 +265,8 @@ function get_usdtbuy(){
                 price += json[i].price
             }
             price = price / json.length;
-            if(usdtbuy2sum!=0 && usdtbuy3sum!=0){
-                price = (price + usdtbuy2sum + usdtbuy3sum)/3.0;
+            if(usdtbuy2sum!=0){
+                price = (price + usdtbuy2sum)/2.0;
             }
 
             handle("usdtbuy" , parseFloat(price));
@@ -331,31 +305,7 @@ function get_usdtbuy2(){
         resolve(null);
     });
 }
-function get_usdtbuy3(){
-    return new Promise(resolve => {
-        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=0&currPage=3&online=1&range=0&currentPage=1&merchant=0";
-        console.log(url);
-        http.get(url, {
-            timeout: 10000,
-            gzip: true
-        }).then(data => {
 
-            let json = JSON.parse(data).data;
-            let price = 0.0;
-            for(let i = 0; i < json.length; i++){
-                price += json[i].price
-            }
-            usdtbuy3sum = price / json.length;
-            resolve(null);
-        }).catch(ex => {
-            console.log("catch");
-            resolve(null);
-        });
-    }, reject => {
-        console.log("reject");
-        resolve(null);
-    });
-}
 function run() {
     // var today = getDateString();
    // get_marketUsdtPrice();
@@ -370,7 +320,7 @@ function run() {
 
 
     // let list = [get_usd];
-    let list = [get_depth,get_usd,get_usdtsell3,get_usdtsell2,get_usdtsell,get_usdtbuy3,get_usdtbuy2, get_usdtbuy];
+    let list = [get_depth,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
     Promise.map(list, item => {
 
         return item();
