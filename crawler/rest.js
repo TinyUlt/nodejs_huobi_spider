@@ -55,7 +55,7 @@ let preValue={};
 //     hour:0
 // };
 
-function insertOne(coin, price){
+function insertOne(nowTime ,coin, price){
 
     if(timeRecord[coin] == null){
 
@@ -79,7 +79,7 @@ function insertOne(coin, price){
         return;
     }
     preValue[coin] = price;
-    let nowTime =  getDataValue();
+    // let nowTime =  getDataValue();
     var where = {_id:nowTime};
 
     let setData = {};
@@ -123,8 +123,8 @@ function insertOne(coin, price){
 
 }
 
-function handle(coin, price) {
-    insertOne(coin, price);
+function handle(nowTime, coin, price) {
+    insertOne(nowTime, coin, price);
 
     // let symbol = (coin + currency).toLowerCase();
     // orderbook[symbol] = price;
@@ -133,11 +133,12 @@ function handle(coin, price) {
     // TODO 记录数据到你的数据库或者Redis
 }
 
-function get_depth() {
+function get_btcusdt() {
     let coin = "btc";
     let currency = "usdt";
     return new Promise(resolve => {
-        let url = `${BASE_URL}/market/detail/merged?symbol=${coin}${currency}`;
+        // let url = `https://api.huobi.pro/market/detail/merged?symbol=${coin}${currency}`;
+        let url = `https://api.huobi.pro/market/history/kline?period=1min&size=2&symbol=btcusdt`;
         console.log(url);
         http.get(url, {
             timeout: 10000,
@@ -145,10 +146,12 @@ function get_depth() {
         }).then(data => {
             // console.log(data);
             let json = JSON.parse(data);
-            let price = json.tick.close;
+            let price = json.data[0].close;
 
-            handle(coin, price);
-            handle("btcamount", json.tick.amount);
+            handle(json.ts, coin, price);
+            handle(json.data[1].id * 1000, "btcminamount", json.data[1].amount);
+            handle(json.data[1].id * 1000, "btcminvol", json.data[1].amount);
+            handle(json.data[1].id * 1000, "btcmincount", json.data[1].amount);
             resolve(null);
         }).catch(ex => {
             console.log(coin, currency, ex);
@@ -179,7 +182,7 @@ function get_usd(){
             // }
             let list = data.split(",");
             console.log(list[1]);
-            handle("usd" , parseFloat(list[1]));
+            handle(getDataValue(), "usd" , parseFloat(list[1]));
             resolve(null);
         }).catch(ex => {
             console.log("catch");
@@ -213,7 +216,7 @@ function get_usdtsell(){
                 price = (price + usdtsell2sum )/2.0;
             }
 
-            handle("usdt" , parseFloat(price));
+            handle(getDataValue(), "usdt" , parseFloat(price));
             resolve(null);
         }).catch(ex => {
             console.log("catch");
@@ -269,7 +272,7 @@ function get_usdtbuy(){
                 price = (price + usdtbuy2sum)/2.0;
             }
 
-            handle("usdtbuy" , parseFloat(price));
+            handle(getDataValue(), "usdtbuy" , parseFloat(price));
             resolve(null);
         }).catch(ex => {
             console.log("catch");
@@ -320,7 +323,7 @@ function run() {
 
 
     // let list = [get_usd];
-    let list = [get_depth,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
+    let list = [get_btcusdt,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
     Promise.map(list, item => {
 
         return item();
