@@ -150,8 +150,8 @@ function get_btcusdt() {
 
             handle(json.ts, coin, price);
             handle(json.data[1].id * 1000, "btcminamount", json.data[1].amount);
-            handle(json.data[1].id * 1000, "btcminvol", json.data[1].amount);
-            handle(json.data[1].id * 1000, "btcmincount", json.data[1].amount);
+            handle(json.data[1].id * 1000, "btcminvol", json.data[1].vol);
+            handle(json.data[1].id * 1000, "btcmincount", json.data[1].count);
             resolve(null);
         }).catch(ex => {
             console.log(coin, currency, ex);
