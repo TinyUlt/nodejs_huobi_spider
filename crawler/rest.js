@@ -199,7 +199,7 @@ let usdtbuy2sum=0;
 
 function get_usdtsell(){
     return new Promise(resolve => {
-        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=1&currPage=1&online=1&range=0&currentPage=1&merchant=0";
+        let url = "https://otc-api.huobipro.com/v1/otc/trade/list/public?country=37&currency=1&payMethod=0&currPage=1&coinId=2&tradeType=1&merchant=1&online=1";
         console.log(url);
         http.get(url, {
             timeout: 10000,
@@ -229,7 +229,7 @@ function get_usdtsell(){
 }
 function get_usdtsell2(){
     return new Promise(resolve => {
-        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=1&currPage=2&online=1&range=0&currentPage=1&merchant=0";
+        let url = "https://otc-api.huobipro.com/v1/otc/trade/list/public?country=37&currency=1&payMethod=0&currPage=2&coinId=2&tradeType=1&merchant=1&online=1";
         console.log(url);
         http.get(url, {
             timeout: 10000,
@@ -255,7 +255,7 @@ function get_usdtsell2(){
 
 function get_usdtbuy(){
     return new Promise(resolve => {
-        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=0&currPage=1&online=1&range=0&currentPage=1&merchant=0";
+        let url = "https://otc-api.huobipro.com/v1/otc/trade/list/public?country=37&currency=1&payMethod=0&currPage=1&coinId=2&tradeType=0&merchant=1&online=1";
         console.log(url);
         http.get(url, {
             timeout: 10000,
@@ -285,7 +285,7 @@ function get_usdtbuy(){
 }
 function get_usdtbuy2(){
     return new Promise(resolve => {
-        let url = "https://api-otc.huobi.pro/v1/otc/trade/list/public?coinId=2&tradeType=0&currPage=2&online=1&range=0&currentPage=1&merchant=0";
+        let url = "https://otc-api.huobipro.com/v1/otc/trade/list/public?country=37&currency=1&payMethod=0&currPage=1&coinId=2&tradeType=0&merchant=1&online=1";
         console.log(url);
         http.get(url, {
             timeout: 10000,
