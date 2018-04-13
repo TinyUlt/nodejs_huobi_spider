@@ -165,24 +165,19 @@ function get_btcusdt() {
 function get_usd(){
     return new Promise(resolve => {
         // let url = "https://api-otc.huobi.pro/v1/otc/base/market/price";
-        let url = "http://hq.sinajs.cn/rn=list=fx_susdcny";
+        let url = "https://www.bloomberg.com/quote/USDCNY:CUR";
         console.log(url);
         http.get(url, {
             timeout: 10000,
             gzip: true
         }).then(data => {
 
+            findstr = '<div class="price">';
+            let index = data.indexOf(findstr);
+            str = data.slice(index + findstr.length,index+findstr.length + 6);
 
-            // let json = JSON.parse(data);
-            // let price = null;
-            // for(let i = 0; i < json.length; i++){
-            //     if(json[i].coinId == 2){
-            //         price =json[i].price
-            //     }
-            // }
-            let list = data.split(",");
-            console.log(list[1]);
-            handle(getDataValue(), "usd" , parseFloat(list[1]));
+            console.log(parseFloat(str));
+            handle(getDataValue(), "usd" , parseFloat(str));
             resolve(null);
         }).catch(ex => {
             console.log("catch");
@@ -193,6 +188,38 @@ function get_usd(){
         resolve(null);
     });
 }
+// function get_usd(){
+//     return new Promise(resolve => {
+//         // let url = "https://api-otc.huobi.pro/v1/otc/base/market/price";
+//         let url = "http://hq.sinajs.cn/rn=list=fx_susdcny";
+//         console.log(url);
+//         http.get(url, {
+//             timeout: 10000,
+//             gzip: true
+//         }).then(data => {
+//
+//
+//             // let json = JSON.parse(data);
+//             // let price = null;
+//             // for(let i = 0; i < json.length; i++){
+//             //     if(json[i].coinId == 2){
+//             //         price =json[i].price
+//             //     }
+//             // }
+//             let list = data.split(",");
+//             console.log(list[1]);
+//             handle(getDataValue(), "usd" , parseFloat(list[1]));
+//             resolve(null);
+//         }).catch(ex => {
+//             console.log("catch");
+//             resolve(null);
+//         });
+//     }, reject => {
+//         console.log("reject");
+//         resolve(null);
+//     });
+// }
+
 let usdtsell2sum=0;
 
 let usdtbuy2sum=0;
