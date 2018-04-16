@@ -162,6 +162,41 @@ function get_btcusdt() {
         resolve(null);
     });
 }
+function get_btcdepth() {
+    //let coin = "btc";
+    //let currency = "usdt";
+    return new Promise(resolve => {
+        // let url = `https://api.huobi.pro/market/detail/merged?symbol=${coin}${currency}`;
+        let url = `https://api.huobipro.com/market/depth?symbol=btcusdt&type=step1`;
+        console.log(url);
+        http.get(url, {
+            timeout: 10000,
+            gzip: true
+        }).then(data => {
+            // console.log(data);
+            let json = JSON.parse(data);
+
+            let hbbids =0;
+            let asks = 0;json.tick.asks[0][1];
+
+            for(let i = 0; i < 10; i++){
+                hbbids+=json.tick.bids[i][1];
+                asks+=json.tick.asks[i][1];
+            }
+
+            handle(json.ts, "hbbids", hbbids);
+            handle(json.ts, "hbasks", asks);
+
+            resolve(null);
+        }).catch(ex => {
+            console.log(coin, currency, ex);
+            resolve(null);
+        });
+    }, reject => {
+        console.log("reject");
+        resolve(null);
+    });
+}
 // function get_usd(){
 //     return new Promise(resolve => {
 //         // let url = "https://api-otc.huobi.pro/v1/otc/base/market/price";
@@ -366,7 +401,7 @@ function run() {
 
 
     // let list = [get_usd];
-    let list = [get_btcusdt,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
+    let list = [get_btcusdt,get_btcdepth,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
     Promise.map(list, item => {
 
         return item();
