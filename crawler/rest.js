@@ -115,9 +115,9 @@ function insertOne(nowTime ,coin, price){
 
     setData[coin] = price;
     var updateStr = {$set: setData};
-    dbase.collection("g").update(where,updateStr,{upsert:true}, function(err, res) {
+    dbase.collection("dddd").update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
-        console.log(coin+"文档插入成功");
+        console.log(coin+" :"+price+"文档插入成功");
     });
 
 
@@ -335,7 +335,23 @@ function get_usdtbuy2(){
         resolve(null);
     });
 }
+let oldUsdtSell=0;
+let oldUsdtBuy = 0;
+function averageOfUsdtSellAndBuy(){
+    if(preValue['usdt'] != oldUsdtSell){
 
+        oldUsdtSell = preValue['usdt'];
+        if(oldUsdtBuy==0){
+            oldUsdtBuy = oldUsdtSell;
+        }
+        handle(getDataValue(), "aveUsdt" , (oldUsdtSell + oldUsdtBuy)/2.0);
+    }
+    if(preValue['usdtbuy'] != oldUsdtBuy){
+        oldUsdtBuy = preValue['usdtbuy'];
+        handle(getDataValue(), "aveUsdt" , (oldUsdtSell + oldUsdtBuy)/2.0);
+    }
+
+}
 function run() {
     // var today = getDateString();
    // get_marketUsdtPrice();
@@ -356,6 +372,7 @@ function run() {
         return item();
     }).then(() => {
 
+        averageOfUsdtSellAndBuy();
          setTimeout(run, 1000 * 3);
     });
 }
