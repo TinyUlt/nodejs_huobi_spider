@@ -475,7 +475,7 @@ function run() {
 
 
     // let list = [get_usd];
-    let list = [get_btcusdt,get_btchbdepth,get_btcokdepth,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
+    let list = [get_btcusdt,get_btchbdepth,get_btcokdepth,get_btcbadepth,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
     Promise.map(list, item => {
 
         return item();
