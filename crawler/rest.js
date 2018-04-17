@@ -162,7 +162,11 @@ function get_btcusdt() {
         resolve(null);
     });
 }
-function get_btcdepth() {
+let oldhbask = 0;
+let oldhbbids = 0;
+let oldokbids = 0;
+let oldokask = 0;
+function get_btchbdepth() {
     //let coin = "btc";
     //let currency = "usdt";
     return new Promise(resolve => {
@@ -176,20 +180,90 @@ function get_btcdepth() {
             // console.log(data);
             let json = JSON.parse(data);
 
-            let hbbids =0;
-            let asks = 0;json.tick.asks[0][1];
+            let bids =0;
+            let asks = 0;
 
             for(let i = 0; i < 10; i++){
-                hbbids+=json.tick.bids[i][1];
+                bids+=json.tick.bids[i][1];
                 asks+=json.tick.asks[i][1];
             }
 
-            handle(json.ts, "hbbids", hbbids);
+            handle(json.ts, "hbbids", bids);
             handle(json.ts, "hbasks", asks);
 
             resolve(null);
         }).catch(ex => {
-            console.log(coin, currency, ex);
+            console.log("btchbdepth",  ex);
+            resolve(null);
+        });
+    }, reject => {
+        console.log("reject");
+        resolve(null);
+    });
+}
+function get_btcokdepth() {
+    //let coin = "btc";
+    //let currency = "usdt";
+    return new Promise(resolve => {
+        // let url = `https://api.huobi.pro/market/detail/merged?symbol=${coin}${currency}`;
+        let url = `https://www.okex.com/api/v1/depth.do?symbol=btc_usdt`;
+        console.log(url);
+        http.get(url, {
+            timeout: 10000,
+            gzip: true
+        }).then(data => {
+            // console.log(data);
+            let json = JSON.parse(data);
+
+            let bids =0;
+            let asks = 0;
+
+            for(let i = 0; i < 10; i++){
+                bids+=json.bids[i][1];
+                asks+=json.asks[i][1];
+            }
+
+            handle(getDataValue(), "okbids", bids);
+            handle(getDataValue(), "okasks", asks);
+
+            resolve(null);
+        }).catch(ex => {
+            console.log("btcokdepth", ex);
+            resolve(null);
+        });
+    }, reject => {
+        console.log("reject");
+        resolve(null);
+    });
+}
+function get_btcbadepth() {
+    //let coin = "btc";
+    //let currency = "usdt";
+    return new Promise(resolve => {
+        // let url = `https://api.huobi.pro/market/detail/merged?symbol=${coin}${currency}`;
+        let url = `https://api.binance.com/api/v1/depth?symbol=BTCUSDT&limit=10`;
+        console.log(url);
+        http.get(url, {
+            timeout: 10000,
+            gzip: true
+        }).then(data => {
+            // console.log(data);
+            let json = JSON.parse(data);
+
+            let bids =0;
+            let asks = 0;
+
+            for(let i = 0; i < 10; i++){
+                bids+=parseFloat(json.bids[i][1]);
+                asks+=parseFloat(json.asks[i][1]);
+            }
+
+            handle(getDataValue(), "babids", bids);
+            handle(getDataValue(), "baasks", asks);
+
+            resolve(null);
+        }).catch(ex => {
+            console.log("btcbadepth", ex);
             resolve(null);
         });
     }, reject => {
@@ -401,13 +475,13 @@ function run() {
 
 
     // let list = [get_usd];
-    let list = [get_btcusdt,get_btcdepth,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
+    let list = [get_btcusdt,get_btchbdepth,get_btcokdepth,get_usd,get_usdtsell2,get_usdtsell,get_usdtbuy2, get_usdtbuy];
     Promise.map(list, item => {
 
         return item();
     }).then(() => {
 
-        averageOfUsdtSellAndBuy();
+        // averageOfUsdtSellAndBuy();
          setTimeout(run, 1000 * 3);
     });
 }
