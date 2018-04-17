@@ -115,7 +115,7 @@ function insertOne(nowTime ,coin, price){
 
     setData[coin] = price;
     var updateStr = {$set: setData};
-    dbase.collection("g").update(where,updateStr,{upsert:true}, function(err, res) {
+    dbase.collection("g4").update(where,updateStr,{upsert:true}, function(err, res) {
         if (err) throw err;
         console.log(coin+" :"+price+"文档插入成功");
     });
@@ -218,9 +218,12 @@ function get_btcokdepth() {
             let bids =0;
             let asks = 0;
 
+            for(let i = json.bids.length-1; i >= json.bids.length - 10; i--){
+
+                asks += json.asks[i][1];
+            }
             for(let i = 0; i < 10; i++){
-                bids+=json.bids[i][1];
-                asks+=json.asks[i][1];
+                bids += json.bids[i][1];
             }
 
             handle(getDataValue(), "okbids", bids);
@@ -482,7 +485,7 @@ function run() {
     }).then(() => {
 
         // averageOfUsdtSellAndBuy();
-         setTimeout(run, 1000 * 3);
+         setTimeout(run, 1000 * 2);
     });
 }
 
