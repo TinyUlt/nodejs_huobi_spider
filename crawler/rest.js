@@ -162,10 +162,12 @@ function get_btcusdt() {
         resolve(null);
     });
 }
-let oldhbask = 0;
+let oldhbasks = 0;
 let oldhbbids = 0;
 let oldokbids = 0;
-let oldokask = 0;
+let oldokasks = 0;
+let oldbaasks = 0;
+let oldbabids = 0;
 function get_btchbdepth() {
     //let coin = "btc";
     //let currency = "usdt";
@@ -190,6 +192,9 @@ function get_btchbdepth() {
 
             handle(json.ts, "hbbids", bids);
             handle(json.ts, "hbasks", asks);
+
+            oldhbasks = asks;
+            oldhbbids = bids;
 
             resolve(null);
         }).catch(ex => {
@@ -228,7 +233,8 @@ function get_btcokdepth() {
 
             handle(getDataValue(), "okbids", bids);
             handle(getDataValue(), "okasks", asks);
-
+            oldokbids = asks;
+            oldokasks = bids;
             resolve(null);
         }).catch(ex => {
             console.log("btcokdepth", ex);
@@ -263,7 +269,8 @@ function get_btcbadepth() {
 
             handle(getDataValue(), "babids", bids);
             handle(getDataValue(), "baasks", asks);
-
+            oldbabids = asks;
+            oldbaasks = bids;
             resolve(null);
         }).catch(ex => {
             console.log("btcbadepth", ex);
@@ -273,6 +280,17 @@ function get_btcbadepth() {
         console.log("reject");
         resolve(null);
     });
+}
+function sum_asks(){
+    if(oldhbasks != 0 && oldbaasks != 0&& oldokasks != 0){
+        handle(getDataValue(), "asks", oldhbasks + oldbaasks + oldokasks);
+    }
+
+}
+function sum_bids(){
+    if(oldhbbids != 0 && oldbabids != 0&& oldokbids != 0){
+        handle(getDataValue(), "bids", oldhbbids + oldbabids + oldokbids);
+    }
 }
 // function get_usd(){
 //     return new Promise(resolve => {
@@ -484,7 +502,9 @@ function run() {
         return item();
     }).then(() => {
 
-        // averageOfUsdtSellAndBuy();
+         averageOfUsdtSellAndBuy();
+         sum_asks();
+         sum_bids();
          setTimeout(run, 1000 * 2);
     });
 }
