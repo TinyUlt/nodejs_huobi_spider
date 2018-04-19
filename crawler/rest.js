@@ -1,6 +1,7 @@
 const moment = require('moment');
 const http = require('../framework/httpClient');
 const Promise = require('bluebird');
+const nodemailer = require('../demo_nodemailer');
 
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
@@ -11,11 +12,6 @@ MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     console.log('Connected correctly to server.');
     dbase = db.db("huobi");
-    // dbase.createCollection('site', function (err, res) {
-    //     assert.equal(null, err);
-    //     console.log("创建集合!");
-    //     db.close();
-    // });
 });
 
 const BASE_URL = 'https://api.huobi.pro';
@@ -30,30 +26,6 @@ function getDataValue(){
 }
 let timeRecord={};
 let preValue={};
-// timeRecord["btc"] = {
-//     halfMinute:0,
-//     minute:0,
-//     fiveMinute:0,
-//     tenMinute:0,
-//     halfHour:0,
-//     hour:0
-// };
-// timeRecord["usd"] = {
-//     halfMinute:0,
-//     minute:0,
-//     fiveMinute:0,
-//     tenMinute:0,
-//     halfHour:0,
-//     hour:0
-// };
-// timeRecord["usdt"] = {
-//     halfMinute:0,
-//     minute:0,
-//     fiveMinute:0,
-//     tenMinute:0,
-//     halfHour:0,
-//     hour:0
-// };
 
 function insertOne(nowTime ,coin, price){
 
@@ -354,6 +326,8 @@ let usdtsell2sum=0;
 
 let usdtbuy2sum=0;
 
+let cheapSell=0;
+let cheapBuy =0;
 function get_usdtsell(){
     return new Promise(resolve => {
         let url = "https://otc-api.huobipro.com/v1/otc/trade/list/public?country=37&currency=1&payMethod=0&currPage=1&coinId=2&tradeType=1&merchant=1&online=1";
@@ -365,6 +339,7 @@ function get_usdtsell(){
 
             let json = JSON.parse(data).data;
             let price = 0.0;
+            cheapSell = json[0].price;
             for(let i = 0; i < json.length; i++){
                 price += json[i].price
             }
@@ -421,6 +396,7 @@ function get_usdtbuy(){
 
             let json = JSON.parse(data).data;
             let price = 0.0;
+            cheapBuy = json[0].price;
             for(let i = 0; i < json.length; i++){
                 price += json[i].price
             }
@@ -482,6 +458,17 @@ function averageOfUsdtSellAndBuy(){
     }
 
 }
+let oldCheapSell=0;
+let oldCheapBuy=0;
+function SendUsdtEmail(){
+    if(oldCheapBuy!=cheapBuy || oldCheapSell!=cheapSell){
+        oldCheapBuy = cheapBuy;
+        oldCheapSell = cheapSell;
+        let sub = `Sell:${cheapSell}-Buy:${cheapBuy}-Usd:${preValue['usd']}-Btc:${preValue['btc']}`;
+        console.log(sub);
+        nodemailer.sendEMail(sub,"text");
+    }
+}
 function run() {
     // var today = getDateString();
    // get_marketUsdtPrice();
@@ -491,8 +478,10 @@ function run() {
     // let list_usdt = ['btc-usdt', 'ltc-usdt', 'eth-usdt', 'etc-usdt', 'bcc-usdt', 'dash-usdt', 'xrp-usdt', 'eos-usdt', 'omg-usdt', 'zec-usdt', 'qtum-usdt'];
     // let list_eth = ['omg-eth', 'eos-eth', 'qtum-eth'];
     // let list = list_btc.concat(list_usdt).concat(list_eth);
-
-
+    // nodemailer.sendEMail("sub","text");
+    // nodemailer.sendEMail("sub","text");
+    //
+    // return;
 
 
     // let list = [get_usd];
@@ -505,6 +494,7 @@ function run() {
          averageOfUsdtSellAndBuy();
          sum_asks();
          sum_bids();
+         SendUsdtEmail();
          setTimeout(run, 1000 * 2);
     });
 }
