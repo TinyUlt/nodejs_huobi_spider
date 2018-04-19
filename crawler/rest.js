@@ -470,6 +470,7 @@ function SendUsdtEmail(){
     }
 }
 function run() {
+
     // var today = getDateString();
    // get_marketUsdtPrice();
     //setTimeout(run, 2000);

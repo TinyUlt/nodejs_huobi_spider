@@ -12,7 +12,7 @@ var nodemailer = require('nodemailer');
 let index = 1;
 let fromMail=["d","e","f","g","h"];
 module.exports.sendEMail = function(subject, text){
-    let from = fromMail[fromMail.length % index]+'@ultbtc.com';
+    let from = fromMail[index % fromMail.length ]+'@ultbtc.com';
     index++;
     console.log(from);
     var transporter = nodemailer.createTransport({
